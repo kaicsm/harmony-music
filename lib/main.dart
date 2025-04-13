@@ -24,11 +24,11 @@ import 'utils/update_check_flag_file.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupSystemChrome();
   await initHive();
   _setAppInitPrefs();
   startApplicationServices();
   Get.put<AudioHandler>(await initAudioService(), permanent: true);
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   TerminateRestart.instance.initialize();
   runApp(const MyApp());
 }
@@ -40,15 +40,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!GetPlatform.isDesktop) Get.put(AppLinksController());
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
     SystemChannels.lifecycle.setMessageHandler((msg) async {
-      if (msg == "AppLifecycleState.resumed") {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      } else if (msg == "AppLifecycleState.detached") {
+      if (msg == "AppLifecycleState.detached") {
         await Get.find<AudioHandler>().customAction("saveSession");
       }
       return null;
     });
+
     return GetMaterialApp(
         title: 'Harmony Music',
         home: const Home(),
@@ -63,10 +62,10 @@ class MyApp extends StatelessWidget {
               mQuery.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.1);
           return Stack(
             children: [
-             GetX<ThemeController>(
+              GetX<ThemeController>(
                 builder: (controller) => MediaQuery(
-                data: mQuery.copyWith(textScaler: scale),
-                child:  AnimatedTheme(
+                  data: mQuery.copyWith(textScaler: scale),
+                  child: AnimatedTheme(
                       duration: const Duration(milliseconds: 700),
                       data: controller.themedata.value!,
                       child: child!),
@@ -136,4 +135,13 @@ void _setAppInitPrefs() {
       "cacheHomeScreenData": true
     });
   }
+}
+
+void setupSystemChrome() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemStatusBarContrastEnforced: false,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false));
 }
