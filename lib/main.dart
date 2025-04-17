@@ -44,6 +44,8 @@ class MyApp extends StatelessWidget {
     SystemChannels.lifecycle.setMessageHandler((msg) async {
       if (msg == "AppLifecycleState.detached") {
         await Get.find<AudioHandler>().customAction("saveSession");
+      } else if (msg == "AppLifecycleState.resumed") {
+        setupSystemChrome(); // Reapply transparent UI when app is resumed
       }
       return null;
     });
