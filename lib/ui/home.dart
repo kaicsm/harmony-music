@@ -3,6 +3,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:harmonymusic/ui/widgets/desktop_app_bar.dart';
 
 import '/ui/screens/Home/home_screen_controller.dart';
 import '/ui/screens/Settings/settings_screen_controller.dart';
@@ -186,24 +187,35 @@ class Home extends StatelessWidget {
                     )
                   : null,
               drawerScrimColor: Colors.transparent,
-              body: Obx(() => SlidingUpPanel(
-                    onPanelSlide: playerController.panellistener,
-                    controller: playerController.playerPanelController,
-                    minHeight: playerController.playerPanelMinHeight.value,
-                    maxHeight: size.height,
-                    isDraggable: !isWideScreen,
-                    onSwipeUp: () {
-                      playerController.queuePanelController.open();
-                    },
-                    panel: const Player(),
-                    body: const ScreenNavigation(),
-                    header: !isWideScreen
-                        ? InkWell(
-                            onTap: playerController.playerPanelController.open,
-                            child: const MiniPlayer(),
-                          )
-                        : const MiniPlayer(),
-                  ))),
+              body: Column(
+                children: [
+                  // Desktop App bar
+                  if (GetPlatform.isDesktop) DesktopAppBar(),
+
+                  Expanded(
+                    child: Obx(() => SlidingUpPanel(
+                          onPanelSlide: playerController.panellistener,
+                          controller: playerController.playerPanelController,
+                          minHeight:
+                              playerController.playerPanelMinHeight.value,
+                          maxHeight: size.height,
+                          isDraggable: !isWideScreen,
+                          onSwipeUp: () {
+                            playerController.queuePanelController.open();
+                          },
+                          panel: const Player(),
+                          body: const ScreenNavigation(),
+                          header: !isWideScreen
+                              ? InkWell(
+                                  onTap: playerController
+                                      .playerPanelController.open,
+                                  child: const MiniPlayer(),
+                                )
+                              : const MiniPlayer(),
+                        )),
+                  ),
+                ],
+              )),
         ),
       ),
     );
