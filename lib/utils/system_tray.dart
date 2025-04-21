@@ -22,7 +22,7 @@ class DesktopSystemTray extends GetxService with TrayListener {
         ? 'assets/icons/icon.ico'
         : 'assets/icons/icon.png';
 
-    // await windowManager.ensureInitialized(); // Started on main
+    await windowManager.ensureInitialized();
     final playerController = Get.find<PlayerController>();
 
     await trayManager.setIcon(path);
